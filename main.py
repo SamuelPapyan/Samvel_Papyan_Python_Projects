@@ -5,30 +5,36 @@ import json
 import mysql.connector as mysqli
 from enum import Enum
 
+# SalesMethod Enum
 class SalesMethod(Enum):
   ByRecipe = 1
   FreeSale = 2
 
+# DrugType Enum
 class DrugType(Enum):
   Pill = 1
   Powder = 2
   Salve = 3
   Liquid = 4
 
+# Տվյալների բազայի հետ կապը
 mydb = mysqli.connect(
   host="localhost",
   user="root",
   password="root123",
   database="pharmacy_db"
 )
+# Տվյալների բազայի հետ աշխատելու գործիքը (Կուրսոր)
 mycursor = mydb.cursor()
 
+
+# UI (Օգտռագործողի Տեսարան) դասը
 class UI:
-  
+  # Կոնստրուկտոր
   def __init__(self):
     print("Welcome to Samvel Papyan's Project")
     self.instruction_case_1()
-
+  # Տվյալների ցուցակների ցուցակ
   def instruction_case_1(self):
     print("Press 1 for list of pharmacies")
     print("Press 2 for list of categories")
@@ -43,6 +49,7 @@ class UI:
     except:
       print("Wrong Input, Try Again")
       self.instruction_case_1()
+  
   def print_data_set(self,index):
     if index == 1:
       mycursor.execute('select * from pharmacies')
@@ -80,6 +87,7 @@ class UI:
       for x in data:
         Printer.print_pharmacy_network(x)
         print("=======================")
+  # Ինդեքսի ստուգում (ցուցակի որոնում)      
   def check_index(self,index):
     if index in [1,2,3,4,5,6]:
       self.print_data_set(index)
@@ -88,7 +96,8 @@ class UI:
       print("Goodbye")
     else:
       self.instruction_case_1()
-      
+  
+  # Գործողությունների ցուցակ
   def instruction_case_2(self,index):
     print("Press 1 for search an item")
     print("Press 2 for insert an item")
@@ -101,6 +110,7 @@ class UI:
       print("Wrong input, try again")
       self.instruction_case_2(index)
 
+  # Ներմուծված գործողությունի ստուգում
   def check_action(self,index,list_index):
     if index == 1:
       self.search_instruction(list_index)
@@ -113,6 +123,7 @@ class UI:
     else:
       self.instruction_case_2()
 
+  # Որոնման գործողություն
   def search_instruction(self,index):
     my_input = input("Type something for search or enter 'exit_search' for undo: ")
     if(my_input != "exit_search"):
@@ -134,6 +145,7 @@ class UI:
       input("Press enter to continue")
     self.check_index(index)
   
+  # Հեռացման գործողություն
   def delete_instruction(self,index):
     answer = input("Are you want to delete one of items?[Y/N]")
     try:
@@ -403,7 +415,8 @@ class UI:
     print("--------------------------------")
     print("Pharmacy Network Successfully Added")
     print("--------------------------------")
-
+  
+  # Ավելացման գործողություն
   def insert_instruction(self,index):
     answer = input("Are you want to insert a new item?[Y/N]")
     if answer in ["y","yes","Y","YES"]:
@@ -423,7 +436,9 @@ class UI:
         self.instruction_case_2(index)
     self.check_index(index)
 
+# Printer (Տպիչ) գործողություն
 class Printer:
+  # Արտածել ըստ ինդեքսի (փնտրել որ աղյուսակից պիտի արտածվի)
   def print(data, index):
     if index == 1:
       Printer.print_pharmacy(data)
@@ -437,6 +452,7 @@ class Printer:
       Printer.print_drug(data)
     elif index == 6:
       Printer.print_pharmacy_network(data)
+  # Արտածել դեղատան տվյալները
   def print_pharmacy(data):
     mycursor.execute("select website_link from pharmacy_networks where pharmacy_network_id = %s",(str(data[4]),))
     mydata = mycursor.fetchall()
@@ -451,23 +467,29 @@ class Printer:
     print("Pharmacy Network Website:", website_link)
     print("Drugs:",end="")
     print(" | ".join(drugs))
+  # Արտածել արտադրողի տվյալները
   def print_manufacturer(data):
     print("Manufacturer:",data[0])
     Printer.print_person(data)
+  # Արտածել ներմուծողի տվյալները
   def print_supplier(data):
     print("Supplier:",data[0])
     Printer.print_person(data)
+  # Արտածել մարդու տվյալները (արտադրողի և ներմուծողի ընդհանուր կոդի հատվածը)
   def print_person(data):
     print("Contact Name:", data[1])
     print("Address:", data[2])
     print("Phone:", data[3])
     print("Country:",data[4])
+  # Արտածել դասակարգչի տվյալները
   def print_category(data):
     print("Category:",data[0])
     print("Category Name:",data[1])
+  # Արտածել դեղատան ցանցի տվյալները
   def print_pharmacy_network(data):
     print("Pharmacy Network:", data[0])
     print("Website Link:", data[1])
+  # Արտածել դեղի տվյալները
   def print_drug(data):
     mycursor.execute("select contact_name from manufacturers where manufacturer_id = %s",(str(data[6]),))
     mydata = mycursor.fetchall()
@@ -504,7 +526,9 @@ class Printer:
     print("Expiration_date: ",data[10])
     print("Category:",category_name)
 
+# MySearchEngine (Իմ որոնման շարժիչ) դասը
 class MySearchEngine:
+  # Որոնել ըստ ինդեքսի (փնտրել որ աղյուսակից պիտի որոնի)
   def search(item, index):
     if index == 1:
       return MySearchEngine.search_pharmacies(item)
@@ -518,36 +542,42 @@ class MySearchEngine:
       return MySearchEngine.search_drugs(item)
     elif index == 6:
       return MySearchEngine.search_pharmacy_networks(item)
+  # Որոնել դեղատտները
   def search_pharmacies(item):
     fake_regex = '%' + item + '%'
     sql = "select * from pharmacies where pharmacy_id = %s or sales_method like %s or name like %s or address like %s or sales_method = %s"
     val = (item, fake_regex, fake_regex, fake_regex, item)
     mycursor.execute(sql,val)
     return mycursor.fetchall()
+  # Որոնել դասակարգիչները
   def search_categories(item):
     fake_regex = '%' + item + '%'
     sql = "select * from categories where category_id = %s or category_name like %s"
     val = (item, fake_regex)
     mycursor.execute(sql,val)
     return mycursor.fetchall()
+  # Որոնել արտադրողները
   def search_manufacturers(item):
     fake_regex = '%' + item + '%'
     sql = "select * from categories where manufacturer_id = %s or contact_name like %s or address like %s or phone like %s or country like %s"
     val = (item, fake_regex, fake_regex, fake_regex, fake_regex)
     mycursor.execute(sql,val)
     return mycursor.fetchall()
+  # Որոնել ներմուծողները
   def search_suppliers(item):
     fake_regex = '%' + item + '%'
     sql = "select * from categories where supplier_id = %s or contact_name like %s or address like %s or phone like %s or country like %s"
     val = (item, fake_regex, fake_regex, fake_regex, fake_regex)
     mycursor.execute(sql,val)
     return mycursor.fetchall()
+  # Որոնել դեղատան ցանցերը
   def search_pharmacy_networks(item):
     fake_regex = '%' + item + '%'
     sql = "select * from pharmacy_networks where pharmacy_network_id = %s or website_link like %s"
     val = (item, fake_regex)
     mycursor.execute(sql,val)
     return mycursor.fetchall()
+  # Որոնել դեղերը
   def search_drugs(item):
     fake_regex = '%' + item + '%'
     sql = "select * from drugs where drug_id = %s or sales_method = %s or title like %s or price = %s or dose = %s or description like %s or drug_type = %s or brand like %s"
@@ -555,7 +585,9 @@ class MySearchEngine:
     mycursor.execute(sql,val)
     return mycursor.fetchall()
 
+# Delete (ջնջել) դասը
 class Delete:
+  # Ջնջել ըստ ինդեքսի (փնտրել որ աղյուսակից պիտի ջնջել)
   def delete(index):
     if index == 1:
       Delete.delete_pharmacy()
@@ -569,6 +601,7 @@ class Delete:
       Delete.delete_drug()
     elif index == 6:
       Delete.delete_pharmacy_network()
+  # Ջնջել դեղատունը
   def delete_pharmacy():
     mycursor.execute("select pharmacy_id from pharmacies")
     mydata = mycursor.fetchall()
@@ -587,6 +620,8 @@ class Delete:
       mydb.commit()
     except Exception as e:
       print(e)
+
+  # Ջնջել դասակարգիչը
   def delete_category():
     mycursor.execute("select category_id from categories")
     mydata = mycursor.fetchall()
@@ -600,6 +635,8 @@ class Delete:
         print("Wrong input, try again.")
     mycursor.execute("delete from categories where category_id = %s",(str(my_id),))
     mydb.commit()
+
+  # Ջնջել արտադրողը
   def delete_manufacturer():
     mycursor.execute("select manufacturer_id from manufacturers")
     mydata = mycursor.fetchall()
@@ -613,6 +650,8 @@ class Delete:
         print("Wrong input, try again.")
     mycursor.execute("delete from manufacturers where manufacturer_id = %s",(str(my_id),))
     mydb.commit()
+
+  # Ջնջել ներմուծողը
   def delete_supplier():
     mycursor.execute("select supplier_id from suppliers")
     mydata = mycursor.fetchall()
@@ -626,6 +665,8 @@ class Delete:
         print("Wrong input, try again.")
     mycursor.execute("delete from suppliers where supplier_id = %s",(str(my_id),))
     mydb.commit()
+
+  # Ջնջել դեղը
   def delete_drug():
     try:
       mycursor.execute("select drug_id from drugs")
@@ -648,6 +689,8 @@ class Delete:
       mydb.commit()
     except Exception as e:
       print(e)
+    
+  # Ջնջել դեղատան ցանցը
   def delete_pharmacy_network():
     mycursor.execute("select pharmacy_network_id from pharmacy_networks")
     mydata = mycursor.fetchall()
