@@ -157,7 +157,7 @@ class UI:
     except Exception as e:
       print(e)
     self.check_index(index)
-
+  # Ավելացնել դեղատուն
   def add_pharmacy(self):
     my_sales_method = 0
     while my_sales_method == 0:
@@ -229,6 +229,7 @@ class UI:
     print("Pharmacy successfully added")
     print("--------------------------------")
 
+  # Ավելացնել դեղ
   def add_drug(self):
     my_title = input("Drug Title: ")
     my_sales_method = 0
@@ -373,6 +374,7 @@ class UI:
     except Exception as e:
       print(e)
 
+  # Ավելացնել դասակարգիչ
   def add_category(self):
     my_name = input("Category Name: ")
     input_query = "insert into categories (category_name) values (%s)"
@@ -382,6 +384,8 @@ class UI:
     print("--------------------------------")
     print("Category Successfully Added")
     print("--------------------------------")
+  
+  # Ավելացնել արտադրողը
   def add_manufacturer(self):
     my_contact_name = input("Contact Name: ")
     my_address = input("Address: ")
@@ -394,6 +398,8 @@ class UI:
     print("--------------------------------")
     print("Manufacturer Successfully Added")
     print("--------------------------------")
+
+  # Ավելացնել ներմուծողը
   def add_supplier(self):
     my_contact_name = input("Contact Name: ")
     my_address = input("Address: ")
@@ -406,6 +412,8 @@ class UI:
     print("--------------------------------")
     print("Supplier Successfully Added")
     print("--------------------------------")
+
+  # Ավելացնել դեղատան ցանցը
   def add_pharmacy_network(self):
     my_website_link = input("Website Link: ")
     input_query = "insert into pharmacy_networks (website_link) values (%s)"
