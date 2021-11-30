@@ -2,58 +2,69 @@ import requests
 import json
 import pandas as pd
 
+# Pandas-ի օպցիաների կարգավորում (արտածել մաքսիմալ քանակով սյուներով և տողերով)
 pd.set_option("display.max_rows", None, "display.max_columns", None)
 
-audios_folder = './audios/'
-
-if not os.path.exists(audios_folder):
-  os.makedirs(audios_folder)
-
+# SpotifyAPI դասը
 class SpotifyAPI:
+  # Spotify API Client ID
   CLIENT_ID = '412d43b5726641bd8dffc916ec9b7751'
+  # Spotify API Client Secret
   CLIENT_SECRET = 'e2a821211e824ced829641ef46c5e504'
   
+  # Spotify API Auth URL
   AUTH_URL = 'https://accounts.spotify.com/api/token'
+  # Spotify  API-ի հարցումների հետ աշխատելու սկզբնակետը
   BASE_URL = 'https://api.spotify.com/v1/'
 
-
+  # Spotify API Auth response
   auth_response = requests.post(AUTH_URL,{
       'grant_type' : 'client_credentials',
       'client_id': CLIENT_ID,
       'client_secret' : CLIENT_SECRET
   })
 
+  # Spotify API Auth Response Data
   auth_response_data = auth_response.json()
+  # Access Token
   access_token = auth_response_data['access_token']
+
+  # Headers
   headers = {
       'Authorization': 'Bearer {token}'.format(token=access_token)
   }
 
+  # Ստանալ երգի տվյալները
   def get_track(self,id):
     r = requests.get(SpotifyAPI.BASE_URL + 'tracks/' + id, headers=SpotifyAPI.headers)
     r = r.json()
     return r
 
+  # Ստանալ ալբոմի երգերի տվյալները
   def get_album_tracks(self,id):
     r = requests.get(SpotifyAPI.BASE_URL + 'albums/' + id + '/tracks?limit=30',headers=SpotifyAPI.headers)
     r = r.json()
     return r
 
+  # Ստանալ ալբոմի տվյալները
   def get_album(self,id):
     r = requests.get(SpotifyAPI.BASE_URL + 'albums/' + id,headers=SpotifyAPI.headers)
     r = r.json()
     return r
 
+  # Ստանալ երաժշտի ալբոմնեիր տվյալները
   def get_artist_albums(self,id):
     r = requests.get(SpotifyAPI.BASE_URL + 'artists/' + id + '/albums',headers=SpotifyAPI.headers)
     r = r.json()
     return r
 
+  # Ստանալ երաժշտի տվյալները
   def get_artist(self,id):
     r = requests.get(SpotifyAPI.BASE_URL + 'artists/' + id,headers=SpotifyAPI.headers)
     r = r.json()
     return r
 
+  # Արտածել ալբոմի երգերի ցուցակը
   def display_albums_track(self,album):
     artists_list = [artist["name"] for artist in album["artists"]]
     print(" & ".join(artists_list), end= " - ")
@@ -65,16 +76,19 @@ class SpotifyAPI:
       print(" & ".join(artists_list), end= " - ")
       print("{music_name}".format(music_no = item["track_number"],music_name = item["name"]))
 
+  # Որոնել երաժիշտները
   def search_artist(self,search_query):
     r = requests.get(SpotifyAPI.BASE_URL + 'search?q=' + search_query +'&type=artist',headers=SpotifyAPI.headers)
     r = r.json()
     return r
-
+  
+  # Որոնել ալբոմները
   def search_album(self,search_query):
     r = requests.get(SpotifyAPI.BASE_URL + 'search?q=' + search_query +'&type=album',headers=SpotifyAPI.headers)
     r = r.json()
     return r
 
+  # Որոնել երգերը
   def search_track(self,search_query):
     print("Strat searching")
     r = requests.get(SpotifyAPI.BASE_URL + 'search?q=' + search_query +'&type=track',headers=SpotifyAPI.headers)
@@ -82,14 +96,18 @@ class SpotifyAPI:
     r = r.json()
     return r
 
+# UI (Օգտռագործողի Տեսարան) դասը
 class UI:
+  # Կոնստրուկտորը
   def __init__(self):
+    # SpotifyAPI օբյեկտը
     self._spotifyAPI = SpotifyAPI()
     print("Welcome to the Samvel's Spotify API Project")
     print("Enjoy this project")
     print("--------------------------")
     self.instruction_case_1()
 
+  # Դասակարգիչների ընտրման ցանկ
   def instruction_case_1(self):
     print("Enter 'artist' for search artists")
     print("Enter 'album' for search albums")
@@ -104,7 +122,7 @@ class UI:
       print("(IC1) Wrong input, try again.")
       self.instruction_case_1()
     
-  
+  # Ցուցակի ստուգում
   def check_input(self, my_input):
     if my_input == 'artist':
       self.search_artist()
@@ -115,6 +133,7 @@ class UI:
     if my_input == 'exit':
       print("Good Bye!")
 
+  # Երաժշտի որոնում
   def search_artist(self):
     search_query = input("Search: ")
     search_results = self._spotifyAPI.search_artist(search_query)
@@ -145,7 +164,8 @@ class UI:
     except:
       print("Wrong input, try again!")
       self.search_artist()
-    
+  
+  # Ալբոմի որոնում
   def search_album(self):
     search_query = input("Search: ")
     search_results = self._spotifyAPI.search_album(search_query)
@@ -178,6 +198,7 @@ class UI:
       print("Wrong input, try again!")
       self.search_album()
 
+  # Երգերի որոնում
   def search_track(self):
     search_query = input("Search: ")
     print(search_query)
@@ -211,6 +232,7 @@ class UI:
       print("Wrong input, try again!")
       self.search_track()
 
+  # Երգի տվյալների ստացում
   def get_track(self,track_data):
     print("------------------------------------------")
     artists = [x["name"] for x in track_data["artists"]]
@@ -236,6 +258,7 @@ class UI:
       print("Wrong input, try again!")
       self.get_track(track_data)
 
+  # Երաժշտի տվյալների ստացում
   def get_artist(self,artist_data):
     print("------------------------------------------")
     print(artist_data["name"], end=" - ")
@@ -259,6 +282,7 @@ class UI:
       print("Wrong input, try again!")
       self.get_artist(artist_data)
 
+  # Ալբոմի տվյալների ստացում
   def get_album(self,album_data):
     print("------------------------------------------")
     self._spotifyAPI.display_albums_track(album_data)
@@ -282,4 +306,5 @@ class UI:
       self.get_album(album_data)
 
 
+# UI դասի օբյեկտ (ծրագրի սկիզբ)
 UI()
