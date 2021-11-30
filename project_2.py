@@ -1,10 +1,13 @@
 import requests
 import json
 import pandas as pd
-import IPython
-import subprocess
 
 pd.set_option("display.max_rows", None, "display.max_columns", None)
+
+audios_folder = './audios/'
+
+if not os.path.exists(audios_folder):
+  os.makedirs(audios_folder)
 
 class SpotifyAPI:
   CLIENT_ID = '412d43b5726641bd8dffc916ec9b7751'
@@ -215,16 +218,11 @@ class UI:
     print(track_data["name"], end=" - ")
     print(track_data["id"])
     print("------------------------------------------")
-    print("Enter 'save' to save this track")
     print("Enter 'back' to back to search")
     print("Enter 'home' to back to main menu")
     my_input = input()
     try:
-      if my_input == 'save':
-        print("--------------------------------------")
-        self.instruction_case_1()
-        return
-      elif my_input == 'home':
+      if my_input == 'home':
         print("--------------------------------------")
         self.instruction_case_1()
         return
@@ -243,16 +241,11 @@ class UI:
     print(artist_data["name"], end=" - ")
     print(artist_data["id"])
     print("------------------------------------------")
-    print("Enter 'save' to save this artist")
     print("Enter 'back' to back to search")
     print("Enter 'home' to back to main menu")
     my_input = input()
     try:
-      if my_input == 'save':
-        print("--------------------------------------")
-        self.instruction_case_1()
-        return
-      elif my_input == 'home':
+      if my_input == 'home':
         print("--------------------------------------")
         self.instruction_case_1()
         return
@@ -270,16 +263,11 @@ class UI:
     print("------------------------------------------")
     self._spotifyAPI.display_albums_track(album_data)
     print("------------------------------------------")
-    print("Enter 'save' to save this artist")
     print("Enter 'back' to back to search")
     print("Enter 'home' to back to ")
     my_input = input()
     try:
-      if my_input == 'save':
-        print("--------------------------------------")
-        self.instruction_case_1()
-        return
-      elif my_input == 'home':
+      if my_input == 'home':
         print("--------------------------------------")
         self.instruction_case_1()
         return
@@ -293,5 +281,5 @@ class UI:
       print("Wrong input, try again!")
       self.get_album(album_data)
 
-#spotifyAPI = SpotifyAPI()
+
 UI()
