@@ -21,7 +21,7 @@ class DrugType(Enum):
 mydb = mysqli.connect(
   host="localhost",
   user="root",
-  password="root123",
+  password="",
   database="pharmacy_db"
 )
 # Տվյալների բազայի հետ աշխատելու գործիքը (Կուրսոր)
