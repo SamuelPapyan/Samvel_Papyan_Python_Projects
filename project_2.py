@@ -102,9 +102,10 @@ class UI:
   def __init__(self):
     # SpotifyAPI օբյեկտը
     self._spotifyAPI = SpotifyAPI()
-    print("Welcome to the Samvel's Spotify API Project")
-    print("Enjoy this project")
-    print("--------------------------")
+    print("----------------------------------------------")
+    print("Welcome to Samvel Papyan's Project Spotify API")
+    print("           Enjoy the world of music           ")
+    print("----------------------------------------------")
     self.instruction_case_1()
 
   # Դասակարգիչների ընտրման ցանկ
@@ -119,7 +120,7 @@ class UI:
         raise Exception()
       self.check_input(my_input)
     except:
-      print("(IC1) Wrong input, try again.")
+      print("Wrong input, try again.")
       self.instruction_case_1()
     
   # Ցուցակի ստուգում

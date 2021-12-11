@@ -575,7 +575,10 @@ class UI:
   }
   # Կոնստրուկտոր
   def __init__(self):
+    print("----------------------------------")
     print("Welcome to Samvel Papyan's Project")
+    print("       The Pharmacy Network       ")
+    print("----------------------------------")
     self.instruction_case_1()
   # Տվյալների ցուցակների ցուցակ
   def instruction_case_1(self):
